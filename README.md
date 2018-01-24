@@ -1,5 +1,5 @@
 # R
-----
+
 ## R scripts for NLP and classification
 
 This repo contains many ideas and R projects I've developed over the years. 
