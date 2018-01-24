@@ -1,0 +1,22 @@
+Text,IsSunnyRainyCloudy
+sunny,1
+rainy,2
+sunny sunny,1
+sunny rainy,2
+rainy sunny,2
+rainy rainy,2
+sunny sunny sunny,1
+sunny rainy sunny,1
+sunny sunny rainy,1
+rainy sunny sunny,1
+rainy rainy sunny,2
+cloudy,3
+cloudy cloudy,3
+cloudy cloudy cloudy,3
+rainy sunny cloudy,3
+cloudy cloudy sunny,3
+cloudy cloudy rainy,3
+rainy rainy cloudy,2
+sunny sunny cloudy,1
+sunny cloudy,3
+rainy cloudy,3
