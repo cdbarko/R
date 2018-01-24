@@ -1,0 +1,133 @@
+# create some data for example purposes -- you have your read.csv(...) instead.
+myData <- data.frame(x=runif(100),y=runif(100),z=runif(100))
+# get parameters for most optimal model
+myMclust <- Mclust(myData)
+# if you wanted to do your summary like before:
+mySummary <- summary( myMclust$BIC, data=myData )
+
+# add a column in myData CLUST with the cluster.
+myData$CLUST <- myMclust$classification
+# now to write it out:
+write.csv(myData[,c("CLUST","x","y","z")], # reorder columns to put CLUST first
+          file="out.csv",                  # output filename
+          row.names=FALSE,                 # don't save the row numbers
+          quote=FALSE)                     # don't surround column names in ""
+
+MyData$PROB <- MyClust$z
+
+
+
+
+
+
+# Example data
+set.seed(101)
+data = c(rnorm(100, mean = 10), rnorm(20, mean = 20), rnorm(50, mean = 15))
+hist(data)
+
+
+require(mclust)
+# Run Mclust
+mixmdl = Mclust(data)
+
+summary(mixmdl)
+
+# Show means of fitted gaussians
+print( mixmdl$parameters$mean ) 
+
+
+
+
+
+
+
+
+#### 0. Setup
+library("RSiteCatalyst")
+library("RTextTools") #Loads many packages useful for text mining
+
+#### 1. RSiteCatalyst code - Get Natural Search Keywords & Metrics
+
+#Set credentials
+SCAuth(<username:company>, <shared secret>)
+
+#Get list of search engine terms
+searchkeywords <- QueueRanked(<report_suite>, "2013-02-01","2013-09-16", 
+                  c("entries", "visits", "pageviews", "instances", "bounces"), 
+                  "searchenginenaturalkeyword", top="100000", startingWith = "1")
+
+#### 2. Process keywords into format suitable for text mining
+
+#Create document-term matrix, passing data cleaning options
+#Stem the words to avoid multiples of similar words
+#Need to set wordLength to minimum of 1 because "r" a likely term
+dtm <- create_matrix(searchkeywords$'Natural Search Keyword', 
+                     stemWords=TRUE, 
+                     removeStopwords=FALSE, 
+                     minWordLength=1,
+                     removePunctuation= TRUE)
+
+matrix <- create_matrix(texts,ngramLength=3)
+
+
+
+#Inspect most popular words, minimum frequency of 20 
+findFreqTerms(dtm, lowfreq=20)
+
+#find the probability a word is associated
+findAssocs(myDtm, 'find_a_word', 0.5);
+
+# As I understand it, this asks for the list of words that co-occur with chairman (across the three documents) at least 67% of the time. Probably a long list.
+
+	findAssocs(dtm, "chairman",.67)
+
+
+#I think there are 5 main topics: Data Science, Web Analytics, R, Julia, Wordpress
+kmeans5<- kmeans(dtm, 5)
+
+#Merge cluster assignment back to keywords
+kw_with_cluster <- as.data.frame(cbind(searchkeywords$'Natural Search Keyword', kmeans5$cluster))
+names(kw_with_cluster) <- c("keyword", "kmeans5")
+
+#Make df for each cluster result, quickly "eyeball" results
+cluster1 <- subset(kw_with_cluster, subset=kmeans5 == 1)
+cluster2 <- subset(kw_with_cluster, subset=kmeans5 == 2)
+cluster3 <- subset(kw_with_cluster, subset=kmeans5 == 3)
+cluster4 <- subset(kw_with_cluster, subset=kmeans5 == 4)
+cluster5 <- subset(kw_with_cluster, subset=kmeans5 == 5)
+
+
+#accumulator for cost results
+cost_df <- data.frame()
+
+#run kmeans for all clusters up to 100
+for(i in 1:100){
+  #Run kmeans for each level of i, allowing up to 100 iterations for convergence
+  kmeans<- kmeans(x=dtm, centers=i, iter.max=100)
+  
+  #Combine cluster number and cost together, write to df
+  cost_df<- rbind(cost_df, cbind(i, kmeans$tot.withinss))
+
+}
+names(cost_df) <- c("cluster", "cost")
+
+
+
+
+library(wordcloud);
+
+# STEP 6: CREATING A WORD CLOUD
+# Which words show up most often across the documents? This takes a while to process. Then look for the result in your working directory.
+
+dtm.matrix <- as.matrix(dtm) #don't ask why, just do it!
+dtm.sort <- sort(rowSums(dtm.matrix),decreasing=TRUE)
+dtm.last <- data.frame(word = names(dtm.sort),freq=dtm.sort)
+	table(dtm.last$freq)
+	pal2 <- brewer.pal(7,"BrBG")
+	png(file = "fomc.png", width=1280, height=800)
+	wordcloud(dtm.last$word,dtm.last$freq, scale=c(8,.2),min.freq=3,max.words=Inf, random.order=FALSE, rot.per=.15, colors=pal2)
+	dev.off()
+
+
+
+

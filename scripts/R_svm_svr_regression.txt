@@ -1,0 +1,139 @@
+## Prepare Scatter Plot with Best Fit Line
+
+#Set Working Directory using setwd("")
+
+#Read Data
+data=read.csv("SVM.csv", header=T)
+head(data)
+
+#Scatter Plot
+plot(data, main ="Scatter Plot")
+
+#Linear Model
+model=lm(Y~X,data)
+abline(model)
+
+
+
+
+
+## Prepare Scatter Plot with Predicted Points
+
+#Scatter Plot
+plot(data, pch=16)
+
+#Predict Y using Linear Model
+predY <- predict(model, data)
+
+#Overlay Predictions on Scatter Plot
+points(data$X, predY, col = "blue", pch=16)
+
+
+
+
+
+## Calulate Root Mean Square Error (RMSE) for Linear Model
+
+#Install Package
+install.packages("hydroGOF")
+
+#Load Library
+library(hydroGOF)
+
+#Calculate RMSE 
+RMSE=rmse(predY,data$Y)
+
+
+
+
+
+## Fit SVR Model and Prepare Scatter Plot
+
+#Install Package
+install.packges("e1071")
+
+#Load Library
+library(e1071)
+
+#Scatter Plot
+plot(data)
+
+#Regression with SVM
+modelsvm=svm(Y~X,data)
+
+#Predict using SVM regression
+predYsvm <- predict(modelsvm, data)
+
+##Overlay SVM Predictions on Scatter Plot
+points(data$X, predYsvm, col = "red", pch=16)
+
+
+
+
+
+## Calculate parameters of the SVR Model
+#Find value of W
+W=t(modelsvm$coefs) %*% modelsvm$SV
+
+#Find value of b
+b=modelsvm$rho  
+
+
+
+
+## RMSE for SVR Model
+
+#Calculate RMSE 
+RMSEsvm=rmse(predYsvm,data$Y)
+
+
+
+
+
+##  Optimising SVR Model and Selecting Best Model
+
+#Tune the above SVM model
+OptModelsvm=tune(svm, Y~X, data=data,ranges=list(elsilon=seq(0,1,0.1), cost=1:100))
+
+#Print optimum value of parameters
+print(OptModelsvm)
+
+#Plot the perfrormance of SVM Regression model
+plot(OptModelsvm)
+
+#Find out the best model
+BstModel=OptModelsvm$best.model
+
+#Predict Y using best model
+PredYBst=predict(BstModel,data)
+
+#Calculate RMSE of the best model 
+RMSEBst=rmse(PredYBst,data$Y)
+
+
+
+
+
+## Calculate parameters of the Best SVR Model
+#Find value of W
+W=t(BstModel$coefs) %*% BstModel$SV
+
+#Find value of b
+b=BstModel$rho  
+
+
+
+## Plotting SVR Model and Tuned Model in same plot
+
+plot(data, pch=16)
+points(data$X, predYsvm, col = "blue", pch=3)
+points(data$X, PredYBst, col = "red", pch=4)
+points(data$X, predYsvm, col = "blue", pch=3, type="l")
+points(data$X, PredYBst, col = "red", pch=4, type="l")
+
+
+
+
+
+
+

@@ -1,0 +1,52 @@
+
+
+# Load package and its data 
+library(smbinning) 
+data(chileancredit) 
+# Training and testing samples 
+chileancredit.train=subset(chileancredit,FlagSample==1) 
+chileancredit.test=subset(chileancredit,FlagSample==0) 
+# Run and save results 
+result=smbinning(df=chileancredit.train,y="FlagGB",x="TOB",p=0.05) 
+result$ivtable
+ 
+# Relevant plots (2x2 Page) 
+par(mfrow=c(2,2)) 
+boxplot(chileancredit.train$TOB~chileancredit.train$FlagGB, 
+horizontal=T, frame=F, col="lightgray",main="Distribution") 
+mtext("Time on Books (Months)",3) 
+smbinning.plot(result,option="dist",sub="Time on Books (Months)") 
+smbinning.plot(result,option="badrate",sub="Time on Books (Months)") 
+smbinning.plot(result,option="WoE",sub="Time on Books (Months)")
+
+
+cluster variables
+
+library(ClustOfVar)
+library(reshape2)
+library(plyr)
+
+data(train, package="Information")
+data(valid, package="Information")
+train <- subset(train, TREATMENT==1)
+valid <- subset(valid, TREATMENT==1)
+
+tree <- hclustvar(train[,!(names(train) %in% c("PURCHASE", "TREATMENT"))])
+nvars <- length(tree[tree$height<0.7])
+part_init<-cutreevar(tree,nvars)$cluster
+kmeans<-kmeansvar(X.quanti=train[,!(names(train) %in% c("PURCHASE", "TREATMENT"))],init=part_init)
+clusters <- cbind.data.frame(melt(kmeans$cluster), row.names(melt(kmeans$cluster)))
+names(clusters) <- c("Cluster", "Variable")
+clusters <- join(clusters, IV$Summary, by="Variable", type="left")
+clusters <- clusters[order(clusters$Cluster),]
+clusters$Rank <- ave(-clusters$AdjIV, clusters$Cluster, FUN=rank)
+selected_members <- subset(clusters, Rank==1)
+selected_members$Rank <- NULL
+
+grid.table(head(selected_members),
+           rows=NULL,
+           gp=gpar(fontsize=12))
+
+
+
+
